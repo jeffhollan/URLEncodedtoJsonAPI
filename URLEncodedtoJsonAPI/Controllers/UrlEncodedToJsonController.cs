@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace URLEncodedtoJsonAPI.Controllers
 {
@@ -9,10 +11,16 @@ namespace URLEncodedtoJsonAPI.Controllers
     {
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(System.Net.HttpStatusCode.OK, "Twilio Message", typeof(TwilioResponse))]
         [HttpPost]
-        public async System.Threading.Tasks.Task<HttpResponseMessage> UrlEncodedToJson(TwilioResponse twil)
+        public async System.Threading.Tasks.Task<HttpResponseMessage> UrlEncodedToJson([FromBody] string urlEncodedBody)
         {
             //var response = await urlEncodedContent.ReadAsAsync<TwilioResponse>();
-            return Request.CreateResponse(twil);
+            var formData = HttpUtility.ParseQueryString(urlEncodedBody);
+            var dict = new Dictionary<string, string>();
+            foreach (string key in formData)
+            {
+                dict.Add(key, formData[key]);
+            }
+            return Request.CreateResponse(dict);
         }
     }
 
